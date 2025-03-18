@@ -47,25 +47,13 @@
   flex-direction: column;
   box-shadow: inset -2px 0px 2px 0px rgb(0, 0, 0, 0.05);
   position: relative;
-  transition: all 0.3s ease;
-  transform: translateX(0);
+  transition: width ease-out 0.5s, transform ease-out 0.5s, opacity ease-out 0.5s, padding ease-out 0.3s;
   opacity: 1;
-
-  &.sidebar-hidden {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-
-  .sidebar-toggle-button {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 1;
-  }
 
   .sidebar-header-bar {
     display: flex;
     margin-bottom: 20px;
+    transition: opacity ease 0.3s;
 
     .sidebar-bar-button {
       flex-grow: 1;
@@ -74,6 +62,14 @@
         margin-right: 10px;
       }
     }
+  }
+
+  .sidebar-body {
+    transition: opacity ease 0.3s;
+  }
+
+  .sidebar-tail {
+    transition: opacity ease 0.3s;
   }
 
   &:hover,
@@ -86,6 +82,44 @@
       }
     }
   }
+
+  &.sidebar-collapsed {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+    opacity: 0;
+
+    .sidebar-header-bar,
+    .sidebar-body,
+    .sidebar-tail {
+      opacity: 0;
+    }
+  }
+}
+
+  .sidebar-collapsed {
+    transform: translateX(-100%);
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+    opacity: 0;
+
+    .sidebar-header-bar,
+    .sidebar-body,
+    .sidebar-tail {
+      opacity: 0;
+    }
+  }
+
+  .sidebar-show {
+    transform: translateX(0);
+    opacity: 1;
+
+    .sidebar-header-bar,
+    .sidebar-body,
+    .sidebar-tail {
+      opacity: 1;
+    }
 }
 
 .sidebar-drag {
@@ -113,6 +147,14 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: width ease-out 0.5s, margin-left ease-out 0.5s;
+}
+
+// 当侧边栏折叠时，窗口内容宽度应该自适应
+.sidebar-collapsed+.window-content {
+  width: 100%;
+  margin-left: 0;
 }
 
 .mobile {
@@ -134,12 +176,13 @@
     left: -100%;
     z-index: 1000;
     height: var(--full-height);
-    transition: all ease 0.3s;
+    transition: all ease-out 0.4s, opacity ease-out 0.4s;
     box-shadow: none;
   }
 
   .sidebar-show {
     left: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   }
 
   .mobile {
@@ -360,24 +403,4 @@
 
 .rtl-screen {
   direction: rtl;
-}
-
-.sidebar-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  background-color: var(--white);
-  border-radius: 50%;
-  padding: 8px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    transform: scale(1.1);
-  }
 }
