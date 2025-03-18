@@ -35,6 +35,7 @@ import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
 import MenuFoldIcon from "../icons/menu-fold.svg";
 import MenuUnfoldIcon from "../icons/menu-unfold.svg";
+import AddIcon from "../icons/add.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -97,7 +98,7 @@ import {
   showPrompt,
   showToast,
 } from "./ui-lib";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   CHAT_PAGE_SIZE,
   DEFAULT_TTS_ENGINE,
@@ -1646,12 +1647,17 @@ function _Chat() {
           <div className="window-actions">
             <div className="window-action-button">
               <IconButton
-                icon={<ReloadIcon />}
+                icon={<AddIcon />}
+                text={Locale.Home.NewChat}
                 bordered
-                title={Locale.Chat.Actions.RefreshTitle}
+                title={Locale.Home.NewChat}
                 onClick={() => {
-                  showToast(Locale.Chat.Actions.RefreshToast);
-                  chatStore.summarizeSession(true, session);
+                  if (config.dontShowMaskSplashScreen) {
+                    chatStore.newSession();
+                    navigate(Path.Chat);
+                  } else {
+                    navigate(Path.NewChat);
+                  }
                 }}
               />
             </div>
@@ -1663,6 +1669,17 @@ function _Chat() {
                 bordered
                 title={isSidebarCollapsed ? "显示聊天记录" : "隐藏聊天记录"}
                 onClick={() => toggleSidebar()}
+              />
+            </div>
+            <div className="window-action-button">
+              <IconButton
+                icon={<ReloadIcon />}
+                bordered
+                title={Locale.Chat.Actions.RefreshTitle}
+                onClick={() => {
+                  showToast(Locale.Chat.Actions.RefreshToast);
+                  chatStore.summarizeSession(true, session);
+                }}
               />
             </div>
             {!isMobileScreen && (
@@ -1701,6 +1718,16 @@ function _Chat() {
                 />
               </div>
             )}
+            <div className="window-action-button">
+              <Link to={Path.Settings}>
+                <IconButton
+                  icon={<SettingsIcon />}
+                  bordered
+                  title={Locale.Settings.Title}
+                  aria={Locale.Settings.Title}
+                />
+              </Link>
+            </div>
           </div>
 
           <PromptToast

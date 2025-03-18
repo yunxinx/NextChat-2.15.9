@@ -612,13 +612,11 @@ export const useChatStore = createPersistStore(
           return;
         }
 
-        // if not config compressModel, then using getSummarizeModel
-        const [model, providerName] = modelConfig.compressModel
-          ? [modelConfig.compressModel, modelConfig.compressProviderName]
-          : getSummarizeModel(
-              session.mask.modelConfig.model,
-              session.mask.modelConfig.providerName,
-            );
+        // 使用当前会话的模型和提供者进行标题生成和摘要，而不是固定的模型
+        const [model, providerName] = [
+          modelConfig.model,
+          modelConfig.providerName,
+        ];
         const api: ClientApi = getClientApi(providerName as ServiceProvider);
 
         // remove error messages if any
