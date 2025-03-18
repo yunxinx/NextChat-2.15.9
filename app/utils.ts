@@ -255,11 +255,13 @@ export function isVisionModel(model: string) {
   // Note: This is a better way using the TypeScript feature instead of `&&` or `||` (ts v5.5.0-dev.20240314 I've been using)
 
   const excludeKeywords = ["claude-3-5-haiku-20241022"];
+  // 识别图片、视觉模型定义
   const visionKeywords = [
     "vision",
     "claude-3",
     "gemini-1.5-pro",
     "gemini-1.5-flash",
+    "gemini-2.0-flash",
     "gpt-4o",
     "gpt-4o-mini",
   ];
