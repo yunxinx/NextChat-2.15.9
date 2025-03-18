@@ -33,6 +33,8 @@ import ConfirmIcon from "../icons/confirm.svg";
 import CloseIcon from "../icons/close.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
+import MenuFoldIcon from "../icons/menu-fold.svg";
+import MenuUnfoldIcon from "../icons/menu-unfold.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -948,6 +950,7 @@ function _Chat() {
   const fontFamily = config.fontFamily;
 
   const [showExport, setShowExport] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
@@ -1596,6 +1599,17 @@ function _Chat() {
 
   const [showChatSidePanel, setShowChatSidePanel] = useState(false);
 
+  // 添加侧边栏切换函数
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+    // 触发一个自定义事件，让Home组件监听并更新侧边栏状态
+    window.dispatchEvent(
+      new CustomEvent("toggle-sidebar", {
+        detail: { collapsed: !isSidebarCollapsed },
+      }),
+    );
+  };
+
   return (
     <>
       <div className={styles.chat} key={session.id}>
@@ -1639,6 +1653,16 @@ function _Chat() {
                   showToast(Locale.Chat.Actions.RefreshToast);
                   chatStore.summarizeSession(true, session);
                 }}
+              />
+            </div>
+            <div className="window-action-button">
+              <IconButton
+                icon={
+                  isSidebarCollapsed ? <MenuUnfoldIcon /> : <MenuFoldIcon />
+                }
+                bordered
+                title={isSidebarCollapsed ? "显示聊天记录" : "隐藏聊天记录"}
+                onClick={() => toggleSidebar()}
               />
             </div>
             {!isMobileScreen && (

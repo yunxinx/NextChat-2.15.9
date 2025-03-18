@@ -1,80 +1,197 @@
 .settings {
-  padding: 20px;
-  overflow: auto;
+    padding: 20px;
+    overflow: auto;
 }
 
 .avatar {
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 .edit-prompt-modal {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  .edit-prompt-title {
-    max-width: unset;
-    margin-bottom: 20px;
-    text-align: left;
-  }
-  .edit-prompt-content {
-    max-width: unset;
-  }
+    .edit-prompt-title {
+        max-width: unset;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .edit-prompt-content {
+        max-width: unset;
+    }
 }
 
 .user-prompt-modal {
-  min-height: 40vh;
+    min-height: 40vh;
 
-  .user-prompt-search {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 10px;
-    background-color: var(--gray);
-  }
-
-  .user-prompt-list {
-    border: var(--border-in-light);
-    border-radius: 10px;
-
-    .user-prompt-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-
-      &:not(:last-child) {
-        border-bottom: var(--border-in-light);
-      }
-
-      .user-prompt-header {
-        max-width: calc(100% - 100px);
-
-        .user-prompt-title {
-          font-size: 14px;
-          line-height: 2;
-          font-weight: bold;
-        }
-        .user-prompt-content {
-          font-size: 12px;
-        }
-      }
-
-      .user-prompt-buttons {
-        display: flex;
-        align-items: center;
-        column-gap: 2px;
-
-        .user-prompt-button {
-          //height: 100%;
-          padding: 7px;
-        }
-      }
+    .user-prompt-search {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        background-color: var(--gray);
     }
-  }
+
+    .user-prompt-list {
+        border: var(--border-in-light);
+        border-radius: 10px;
+
+        .user-prompt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+
+            &:not(:last-child) {
+                border-bottom: var(--border-in-light);
+            }
+
+            .user-prompt-header {
+                max-width: calc(100% - 100px);
+
+                .user-prompt-title {
+                    font-size: 14px;
+                    line-height: 2;
+                    font-weight: bold;
+                }
+
+                .user-prompt-content {
+                    font-size: 12px;
+                }
+            }
+
+            .user-prompt-buttons {
+                display: flex;
+                align-items: center;
+                column-gap: 2px;
+
+                .user-prompt-button {
+                    //height: 100%;
+                    padding: 7px;
+                }
+            }
+        }
+    }
 }
 
 .subtitle-button {
-  button {
-    overflow:visible ;
-  }
+    button {
+        overflow: visible;
+    }
+}
+
+.custom-endpoint-manager {
+    width: 100%;
+
+    :global(.ant-list-item),
+    :global(.ant-list-item-content) {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.endpoint-config-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.endpoint-config-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: var(--border-in-light);
+    border-radius: 10px;
+    background-color: var(--white);
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.endpoint-config-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.endpoint-config-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.endpoint-config-provider {
+    font-size: 12px;
+    color: var(--black-50);
+}
+
+.endpoint-config-models,
+.endpoint-config-endpoint {
+    font-size: 11px;
+    color: var(--black-50);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.endpoint-config-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.apply-button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+
+    &:hover {
+        background-color: var(--primary-light);
+    }
+}
+
+.no-configs {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    color: var(--black-50);
+    font-style: italic;
+}
+
+.endpoint-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: var(--border-in-light);
+    background-color: var(--white);
+    font-size: 14px;
+    height: 40px;
+}
+
+.endpoint-config-save {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.endpoint-config-name-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: var(--border-in-light);
+    background-color: var(--white);
+    font-size: 14px;
+    height: 40px;
 }

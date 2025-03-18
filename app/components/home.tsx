@@ -157,6 +157,7 @@ function Screen() {
   const isAuth = location.pathname === Path.Auth;
   const isSd = location.pathname === Path.Sd;
   const isSdNew = location.pathname === Path.SdNew;
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
@@ -164,6 +165,23 @@ function Screen() {
 
   useEffect(() => {
     loadAsyncGoogleFont();
+  }, []);
+
+  useEffect(() => {
+    const handleToggleSidebar = (e: CustomEvent) => {
+      setSidebarCollapsed(e.detail.collapsed);
+    };
+
+    window.addEventListener(
+      "toggle-sidebar",
+      handleToggleSidebar as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "toggle-sidebar",
+        handleToggleSidebar as EventListener,
+      );
+    };
   }, []);
 
   if (isArtifact) {
@@ -181,7 +199,8 @@ function Screen() {
       <>
         <SideBar
           className={clsx({
-            [styles["sidebar-show"]]: isHome,
+            [styles["sidebar-show"]]: isHome && !sidebarCollapsed,
+            [styles["sidebar-collapsed"]]: sidebarCollapsed,
           })}
         />
         <WindowContent>

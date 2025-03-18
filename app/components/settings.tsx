@@ -9,17 +9,15 @@ import CopyIcon from "../icons/copy.svg";
 import ClearIcon from "../icons/clear.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import EditIcon from "../icons/edit.svg";
-import FireIcon from "../icons/fire.svg";
 import EyeIcon from "../icons/eye.svg";
-import DownloadIcon from "../icons/download.svg";
-import UploadIcon from "../icons/upload.svg";
+import DownloadIcon from "../icons/upload.svg";
+import UploadIcon from "../icons/download.svg";
 import ConfigIcon from "../icons/config.svg";
 import ConfirmIcon from "../icons/confirm.svg";
 
 import ConnectionIcon from "../icons/connection.svg";
 import CloudSuccessIcon from "../icons/cloud-success.svg";
 import CloudFailIcon from "../icons/cloud-fail.svg";
-import { trackSettingsPageGuideToCPaymentClick } from "../utils/auth-settings-events";
 import {
   Input,
   List,
@@ -32,6 +30,7 @@ import {
   showToast,
 } from "./ui-lib";
 import { ModelConfigList } from "./model-config";
+import { CustomEndpointManager } from "./custom-endpoint-manager";
 
 import { IconButton } from "./button";
 import {
@@ -49,8 +48,7 @@ import Locale, {
   changeLang,
   getLang,
 } from "../locales";
-import { copyToClipboard, clientUpdate, semverCompare } from "../utils";
-import Link from "next/link";
+import { copyToClipboard } from "../utils";
 import {
   Anthropic,
   Azure,
@@ -64,15 +62,12 @@ import {
   GoogleSafetySettingsThreshold,
   OPENAI_BASE_URL,
   Path,
-  RELEASE_URL,
-  STORAGE_KEY,
   ServiceProvider,
   SlotID,
-  UPDATE_URL,
   Stability,
   Iflytek,
-  SAAS_CHAT_URL,
   ChatGLM,
+  STORAGE_KEY,
 } from "../constant";
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
@@ -583,23 +578,24 @@ export function Settings() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const config = useAppConfig();
   const updateConfig = config.update;
-
   const updateStore = useUpdateStore();
-  const [checkingUpdate, setCheckingUpdate] = useState(false);
-  const currentVersion = updateStore.formatVersion(updateStore.version);
-  const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
-  const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
-  const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
 
-  function checkUpdate(force = false) {
-    setCheckingUpdate(true);
-    updateStore.getLatestVersion(force).then(() => {
-      setCheckingUpdate(false);
-    });
+  //   const updateStore = useUpdateStore();
+  //   const [checkingUpdate, setCheckingUpdate] = useState(false);
+  //   const currentVersion = updateStore.formatVersion(updateStore.version);
+  //   const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
+  //   const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
+  //   const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
 
-    console.log("[Update] local version ", updateStore.version);
-    console.log("[Update] remote version ", updateStore.remoteVersion);
-  }
+  //   function checkUpdate(force = false) {
+  //     setCheckingUpdate(true);
+  //     updateStore.getLatestVersion(force).then(() => {
+  //       setCheckingUpdate(false);
+  //     });
+
+  //     console.log("[Update] local version ", updateStore.version);
+  //     console.log("[Update] remote version ", updateStore.remoteVersion);
+  //   }
 
   const accessStore = useAccessStore();
   const shouldHideBalanceQuery = useMemo(() => {
@@ -646,7 +642,7 @@ export function Settings() {
   const showUsage = accessStore.isAuthorized();
   useEffect(() => {
     // checks per minutes
-    checkUpdate();
+    // checkUpdate();
     showUsage && checkUsage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -691,30 +687,30 @@ export function Settings() {
     </ListItem>
   );
 
-  const saasStartComponent = (
-    <ListItem
-      className={styles["subtitle-button"]}
-      title={
-        Locale.Settings.Access.SaasStart.Title +
-        `${Locale.Settings.Access.SaasStart.Label}`
-      }
-      subTitle={Locale.Settings.Access.SaasStart.SubTitle}
-    >
-      <IconButton
-        aria={
-          Locale.Settings.Access.SaasStart.Title +
-          Locale.Settings.Access.SaasStart.ChatNow
-        }
-        icon={<FireIcon />}
-        type={"primary"}
-        text={Locale.Settings.Access.SaasStart.ChatNow}
-        onClick={() => {
-          trackSettingsPageGuideToCPaymentClick();
-          window.location.href = SAAS_CHAT_URL;
-        }}
-      />
-    </ListItem>
-  );
+  //   const saasStartComponent = (
+  //     <ListItem
+  //       className={styles["subtitle-button"]}
+  //       title={
+  //         Locale.Settings.Access.SaasStart.Title +
+  //         `${Locale.Settings.Access.SaasStart.Label}`
+  //       }
+  //       subTitle={Locale.Settings.Access.SaasStart.SubTitle}
+  //     >
+  //       <IconButton
+  //         aria={
+  //           Locale.Settings.Access.SaasStart.Title +
+  //           Locale.Settings.Access.SaasStart.ChatNow
+  //         }
+  //         icon={<FireIcon />}
+  //         type={"primary"}
+  //         text={Locale.Settings.Access.SaasStart.ChatNow}
+  //         onClick={() => {
+  //           trackSettingsPageGuideToCPaymentClick();
+  //           window.location.href = SAAS_CHAT_URL;
+  //         }}
+  //       />
+  //     </ListItem>
+  //   );
 
   const useCustomConfigComponent = // Conditionally render the following ListItem based on clientConfig.isApp
     !clientConfig?.isApp && ( // only show if isApp is false
@@ -726,14 +722,60 @@ export function Settings() {
           aria-label={Locale.Settings.Access.CustomEndpoint.Title}
           type="checkbox"
           checked={accessStore.useCustomConfig}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.useCustomConfig = e.currentTarget.checked),
-            )
-          }
+          onChange={(e) => {
+            const isChecked = e.currentTarget.checked;
+            accessStore.update((access) => {
+              access.useCustomConfig = isChecked;
+
+              // 如果取消勾选，清除所有自定义接口配置参数
+              if (!isChecked) {
+                // 清除OpenAI相关配置
+                access.openaiApiKey = "";
+                access.openaiUrl = "";
+                // 清除Azure相关配置
+                access.azureApiKey = "";
+                access.azureApiVersion = "";
+                access.azureUrl = "";
+                // 清除Google相关配置
+                access.googleApiKey = "";
+                access.googleApiVersion = "";
+                access.googleUrl = "";
+                // 清除Anthropic相关配置
+                access.anthropicApiKey = "";
+                access.anthropicApiVersion = "";
+                access.anthropicUrl = "";
+                // 清除其他提供商配置...
+                access.baiduApiKey = "";
+                access.baiduSecretKey = "";
+                access.bytedanceApiKey = "";
+                access.alibabaApiKey = "";
+                access.tencentSecretId = "";
+                access.tencentSecretKey = "";
+                access.moonshotApiKey = "";
+                access.xaiApiKey = "";
+                access.chatglmApiKey = "";
+                access.stabilityApiKey = "";
+                access.iflytekApiKey = "";
+                access.iflytekApiSecret = "";
+
+                // 将提供商重置为默认值OpenAI
+                access.provider = ServiceProvider.OpenAI;
+
+                // 清除自定义模型
+                useAppConfig.getState().update((config) => {
+                  config.customModels = "";
+                });
+              }
+            });
+          }}
         ></input>
       </ListItem>
     );
+
+  // 添加自定义接口管理组件的条件渲染
+  const customEndpointManagerComponent = accessStore.useCustomConfig && (
+    <CustomEndpointManager />
+  );
 
   const openAIConfigComponent = accessStore.provider ===
     ServiceProvider.OpenAI && (
@@ -1427,7 +1469,7 @@ export function Settings() {
             </Popover>
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
             subTitle={
               checkingUpdate
@@ -1458,7 +1500,7 @@ export function Settings() {
                 onClick={() => checkUpdate(true)}
               />
             )}
-          </ListItem>
+          </ListItem> */}
 
           <ListItem title={Locale.Settings.SendKey}>
             <Select
@@ -1466,8 +1508,7 @@ export function Settings() {
               value={config.submitKey}
               onChange={(e) => {
                 updateConfig(
-                  (config) =>
-                    (config.submitKey = e.target.value as any as SubmitKey),
+                  (config) => (config.submitKey = e.target.value as any),
                 );
               }}
             >
@@ -1692,7 +1733,7 @@ export function Settings() {
         </List>
 
         <List id={SlotID.CustomModel}>
-          {saasStartComponent}
+          {/* {saasStartComponent} */}
           {accessCodeComponent}
 
           {!accessStore.hideUserApiKey && (
@@ -1701,6 +1742,8 @@ export function Settings() {
 
               {accessStore.useCustomConfig && (
                 <>
+                  {customEndpointManagerComponent}
+
                   <ListItem
                     title={Locale.Settings.Access.Provider.Title}
                     subTitle={Locale.Settings.Access.Provider.SubTitle}
