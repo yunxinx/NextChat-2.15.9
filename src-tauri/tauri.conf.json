@@ -8,8 +8,8 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "NextChat",
-    "version": "2.15.8"
+    "productName": "OpenChat",
+    "version": "2.15.9"
   },
   "tauri": {
     "allowlist": {
@@ -60,7 +60,7 @@
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "2023, Zhang Yifei All Rights Reserved.",
+      "copyright": "2025, XXX All Rights Reserved.",
       "deb": {
         "depends": []
       },
