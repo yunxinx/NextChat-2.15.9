@@ -477,6 +477,8 @@ export function CustomEndpointManager() {
               width: "100%",
               alignItems: "center",
               justifyContent: "flex-end",
+              flexWrap: "wrap",
+              gap: "10px",
             }}
           >
             <Select
@@ -496,7 +498,12 @@ export function CustomEndpointManager() {
                   clearAllSettings(); // 选择默认选项时清空所有参数
                 }
               }}
-              style={{ width: "300px", marginRight: "10px" }}
+              style={{
+                flex: "1",
+                minWidth: "150px",
+                maxWidth: "300px",
+                marginRight: "10px",
+              }}
             >
               <option value="">-- 选择配置 --</option>
               {endpointConfigs.map((config) => (
@@ -506,7 +513,7 @@ export function CustomEndpointManager() {
               ))}
             </Select>
 
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {selectedConfigId ? (
                 <>
                   <IconButton
@@ -547,7 +554,7 @@ export function CustomEndpointManager() {
                   />
                 </>
               ) : (
-                <div style={{ width: "204px" }}></div> // 占位元素，保持布局一致
+                <div style={{ minWidth: "204px", flex: "0 0 auto" }}></div> // 占位元素，保持布局一致
               )}
             </div>
           </div>
@@ -563,6 +570,8 @@ export function CustomEndpointManager() {
               width: "100%",
               justifyContent: "flex-end",
               alignItems: "center",
+              flexWrap: "wrap",
+              gap: "10px",
             }}
           >
             <input
@@ -571,7 +580,13 @@ export function CustomEndpointManager() {
               placeholder="配置名称"
               onChange={(e) => setConfigName(e.target.value)}
               className={styles["endpoint-config-name-input"]}
-              style={{ width: "380px", height: "38px", marginRight: "10px" }}
+              style={{
+                flex: "1",
+                minWidth: "150px",
+                maxWidth: "380px",
+                height: "38px",
+                marginRight: "10px",
+              }}
             />
             <IconButton
               icon={<SaveIcon />}
