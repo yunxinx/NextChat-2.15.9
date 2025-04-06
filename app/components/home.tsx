@@ -157,7 +157,8 @@ function Screen() {
   const isAuth = location.pathname === Path.Auth;
   const isSd = location.pathname === Path.Sd;
   const isSdNew = location.pathname === Path.SdNew;
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [isFirstOpen, setIsFirstOpen] = useState(true);
 
   const isMobileScreen = useMobileScreen();
   const shouldTightBorder =
@@ -170,6 +171,7 @@ function Screen() {
   useEffect(() => {
     const handleToggleSidebar = (e: CustomEvent) => {
       setSidebarCollapsed(e.detail.collapsed);
+      setIsFirstOpen(false);
     };
 
     window.addEventListener(

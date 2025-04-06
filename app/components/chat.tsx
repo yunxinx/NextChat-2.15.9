@@ -885,7 +885,11 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
   const shortcuts = [
     {
       title: Locale.Chat.ShortcutKey.newChat,
-      keys: isMac ? ["⌘", "Shift", "O"] : ["Ctrl", "Shift", "O"],
+      keys: isMac ? ["⌘", "N/T"] : ["Ctrl", "N/T"],
+    },
+    {
+      title: "切换侧边栏",
+      keys: isMac ? ["⌘", "B"] : ["Ctrl", "B"],
     },
     { title: Locale.Chat.ShortcutKey.focusInput, keys: ["Shift", "Esc"] },
     {
@@ -951,7 +955,7 @@ function _Chat() {
   const fontFamily = config.fontFamily;
 
   const [showExport, setShowExport] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
@@ -1539,17 +1543,24 @@ function _Chat() {
 
   useEffect(() => {
     const handleKeyDown = (event: any) => {
-      // 打开新聊天 command + shift + o
+      // 新建对话 command + n/t
       if (
         (event.metaKey || event.ctrlKey) &&
-        event.shiftKey &&
-        event.key.toLowerCase() === "o"
+        (event.key.toLowerCase() === "n" || event.key.toLowerCase() === "t")
       ) {
         event.preventDefault();
         setTimeout(() => {
           chatStore.newSession();
           navigate(Path.Chat);
         }, 10);
+      }
+      // 切换侧边栏 command + b
+      else if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "b"
+      ) {
+        event.preventDefault();
+        toggleSidebar();
       }
       // 聚焦聊天输入 shift + esc
       else if (event.shiftKey && event.key.toLowerCase() === "escape") {
@@ -1602,14 +1613,32 @@ function _Chat() {
 
   // 添加侧边栏切换函数
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-    // 触发一个自定义事件，让Home组件监听并更新侧边栏状态
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
     window.dispatchEvent(
       new CustomEvent("toggle-sidebar", {
-        detail: { collapsed: !isSidebarCollapsed },
+        detail: { collapsed: newState },
       }),
     );
   };
+
+  // 添加 useEffect 来监听自定义事件
+  useEffect(() => {
+    const handleToggleSidebar = (e: CustomEvent) => {
+      setIsSidebarCollapsed(e.detail.collapsed);
+    };
+
+    window.addEventListener(
+      "toggle-sidebar",
+      handleToggleSidebar as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "toggle-sidebar",
+        handleToggleSidebar as EventListener,
+      );
+    };
+  }, []);
 
   return (
     <>
